@@ -1,3 +1,7 @@
+import org.newdawn.slick.geom.Rectangle;
+
+import java.awt.*;
+
 /**
  * Creado por: mmonteiro
  * miguelmonteiroclaveri@gmail.com
@@ -8,7 +12,7 @@
 public class Patient implements Runnable {
     private WaitingRoom waitingRoom;
     private int id;
-    private static int numeroPacientes = 1;
+    static int numeroPacientes = 1;
     private boolean tocaTurno = false;
     boolean operado = false;
 
@@ -16,6 +20,7 @@ public class Patient implements Runnable {
         this.waitingRoom = wr;
         this.id = numeroPacientes++;
     }
+
 
     @Override
     public void run() {
@@ -48,4 +53,5 @@ public class Patient implements Runnable {
     public void setTocaTurno(boolean tocaTurno) {
         this.tocaTurno = tocaTurno;
     }
+
 }

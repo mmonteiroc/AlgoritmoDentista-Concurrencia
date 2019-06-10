@@ -15,12 +15,16 @@ public class Dentist implements Runnable {
 
     @Override
     public void run() {
+        System.out.println();
         System.out.println("Dentista entra a la oficina");
+        System.out.println();
         try {
             while (true) {
                 synchronized (this) {
                     while (!estaOperando && waitingRoom.roomIsEmpty()) {
-                        System.out.println("Dentista espera a tener trabajo");
+                        System.out.println();
+                        System.out.println("Dentista se hecha una siesta mientras que no tiene trabajo");
+                        System.out.println();
                         this.wait();
                     }
                 }
@@ -64,12 +68,17 @@ public class Dentist implements Runnable {
 
 
     private void printText(String text) {
-        System.out.println();
-        System.out.println("###############################");
-        System.out.println("###############################");
+        String barra = "";
+        String barra2 = "";
+        for (int i = 0; i < text.length(); i++) {
+            barra += "#";
+            barra2 += "~";
+        }
+        System.out.println(barra);
+        System.out.println(barra2);
         System.out.println(text);
-        System.out.println("###############################");
-        System.out.println("###############################");
+        System.out.println(barra2);
+        System.out.println(barra);
         System.out.println();
     }
 }

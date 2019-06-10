@@ -11,7 +11,9 @@ public class WaitingRoom {
     private static int numberOfChairsAvaiable = 0;
     private static int numberOfChairs = 0;
     private static LinkedList<Patient> chairs = new LinkedList<Patient>();
-    Patient sillaOperaciones = null;
+    private static LinkedList<Patient> pacientesOperados = new LinkedList<Patient>();
+    private static LinkedList<Patient> rejected = new LinkedList<Patient>();
+    static Patient sillaOperaciones = null;
     Dentist dentista;
 
     WaitingRoom(int capacity) {
@@ -42,9 +44,9 @@ public class WaitingRoom {
                 System.out.println("-------------------");
                 System.out.println();
                 return true;
-
             }
         }
+        rejected.addLast(patient);
         return false;
     }
 
@@ -65,14 +67,32 @@ public class WaitingRoom {
         synchronized (sillaOperaciones) {
             sillaOperaciones.notifyAll();
         }
+        pacientesOperados.addLast(sillaOperaciones);
         sillaOperaciones = null;
         Dentist.estaOperando = false;
     }
 
-    public void setDentista(Dentist dentista) {
+    public synchronized void setDentista(Dentist dentista) {
         this.dentista = dentista;
     }
 
+    public synchronized static LinkedList<Patient> getPatientsWaiting() {
+        return chairs;
+    }
+
+    public synchronized static LinkedList<Patient> getPacientesOperados() {
+        return pacientesOperados;
+    }
+
+    public static int getOpertationId() {
+        synchronized (sillaOperaciones) {
+            return sillaOperaciones.getId();
+        }
+    }
+
+    public synchronized static LinkedList<Patient> getRejected() {
+        return rejected;
+    }
 }
 
 
