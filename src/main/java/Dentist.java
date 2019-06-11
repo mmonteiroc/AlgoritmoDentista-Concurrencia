@@ -53,7 +53,7 @@ public class Dentist implements Runnable {
                     printText("Dentista operando a paciente: " + waitingRoom.sillaOperaciones.getId());
 
                     // Tiempo de operacion random
-                    Thread.sleep(DentistOffice.random.nextInt(8000) + 3000);
+                    Thread.sleep(DentistOffice.random.nextInt(DentistOffice.tiempoOperaciones) + 1000);
 
                     printText("Paciente: " + waitingRoom.sillaOperaciones.getId() + " ya ha sido operado y se va a su casa");
 

@@ -2,6 +2,8 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.geom.Rectangle;
 
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Creado por: mmonteiro
@@ -35,6 +37,44 @@ class MyGame extends BasicGame {
 
     @Override
     public void update(GameContainer gameContainer, int i) throws SlickException {
+        Input tecla = gameContainer.getInput();
+        if (tecla.isKeyDown(Input.KEY_A)) {
+            // subimos el tiempo de pacientes
+            DentistOffice.tiempoEntrePacientes += 100;
+        }
+        if (tecla.isKeyDown(Input.KEY_Z)) {
+            // bajamos el tiempo de pacientes
+            if (DentistOffice.tiempoEntrePacientes >= 200) {
+                DentistOffice.tiempoEntrePacientes -= 100;
+            }
+        }
+
+
+        if (tecla.isKeyDown(Input.KEY_S)) {
+            // subimos el tiempo de operaciones
+            DentistOffice.tiempoOperaciones += 100;
+        }
+        if (tecla.isKeyDown(Input.KEY_X)) {
+            // bajamos teimpo de operaciones
+            if (DentistOffice.tiempoOperaciones >= 200) {
+                DentistOffice.tiempoOperaciones -= 100;
+            }
+        }
+        if (tecla.isKeyDown(Input.KEY_UP)) {
+            DentistOffice.NUMBER_CHAIRS++;
+        }
+        if (tecla.isKeyDown(Input.KEY_DOWN)) {
+            DentistOffice.NUMBER_CHAIRS--;
+        }
+
+        if (tecla.isKeyPressed(Input.KEY_ESCAPE)) {
+
+            ExecutorService es = Executors.newCachedThreadPool();
+            for (int j = 0; j < 80; j++) {
+                es.execute(new Patient(DentistOffice.waitingRoom));
+            }
+
+        }
 
     }
 
@@ -49,21 +89,26 @@ class MyGame extends BasicGame {
         graphics.drawString("Pacientes en espera: ", 5, 30);
         drawPatientsWaiting(graphics);
 
-
+        // Pacientes operados
         graphics.drawString("Pacientes operados: ", 5, 150);
         drawPatientsOperated(graphics);
 
+        // Pintamos el doctor y al que esta operando
         drawDoctor(graphics);
 
-
+        // Pintamos los pacientes rechazados
         graphics.drawString("Pacientes rechazados: ", 5, 450);
         drawRejected(graphics);
+
+        // Velocidad creacion
+        graphics.drawString("(a/z to modify) Tiempo maximo entre pacientes llegando: " + ((double) DentistOffice.tiempoEntrePacientes / 1000) + "s", 750, 5);
+        graphics.drawString("(s/x to modify) Tiempo maximo entre operacion: " + ((double) DentistOffice.tiempoOperaciones / 1000) + "s", 830, 25);
     }
 
     private void drawPatientsWaiting(Graphics graphics) {
         LinkedList<Patient> pacientesEsperando = WaitingRoom.getPatientsWaiting();
         Rectangle box = null;
-        int BOX_SIZE = 30;
+        int BOX_SIZE = 35;
         int x = 20;
         int y = 70;
         draw(pacientesEsperando, x, y, graphics, BOX_SIZE);
@@ -73,16 +118,24 @@ class MyGame extends BasicGame {
 
     private void drawPatientsOperated(Graphics graphics) {
         LinkedList<Patient> pacientesOperado = WaitingRoom.getPacientesOperados();
-        int BOX_SIZE = 30;
+        int BOX_SIZE = 35;
         int x = 20;
         int y = 190;
         draw(pacientesOperado, x, y, graphics, BOX_SIZE);
     }
 
+    private void drawRejected(Graphics graphics) {
+        LinkedList<Patient> rejected = WaitingRoom.getRejected();
+        int BOX_SIZE = 35;
+        int x = 20;
+        int y = 490;
+        draw(rejected, x, y, graphics, BOX_SIZE);
+    }
+
     private void drawDoctor(Graphics graphics) {
         int BOX_SIZE = 100;
-        int x = 900;
-        int y = 330;
+        int x = 800;
+        int y = 120;
 
         Rectangle box = new Rectangle(x, y, BOX_SIZE * 3, BOX_SIZE);
         box.setCenterX(x);
@@ -96,19 +149,20 @@ class MyGame extends BasicGame {
 
     }
 
-    private void drawRejected(Graphics graphics) {
-        LinkedList<Patient> rejected = WaitingRoom.getRejected();
-        int BOX_SIZE = 30;
-        int x = 20;
-        int y = 490;
-        draw(rejected, x, y, graphics, BOX_SIZE);
-    }
+
 
 
     private void draw(LinkedList<Patient> pacientes, int x, int y, Graphics graphics, int BOX_SIZE) {
         Rectangle box = null;
         int yOriginal = y;
-        for (int i = 0; i < pacientes.size(); i++) {
+
+        int dondeEmpezar;
+        if (pacientes.size() > 140) {
+            dondeEmpezar = pacientes.size() - 140;
+        } else {
+            dondeEmpezar = 0;
+        }
+        for (int i = dondeEmpezar; i < pacientes.size(); i++) {
             Patient paciente = pacientes.get(i);
             synchronized (paciente) {
                 box = new Rectangle(x, y, BOX_SIZE, BOX_SIZE);
@@ -116,7 +170,7 @@ class MyGame extends BasicGame {
                 box.setCenterY(y);
 
                 graphics.drawString(paciente.getId() + "", x - 10, y - 10);
-                x += 40;
+                x += 45;
                 //y+=40;
                 graphics.draw(box);
             }

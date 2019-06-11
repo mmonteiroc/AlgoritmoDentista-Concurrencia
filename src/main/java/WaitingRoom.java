@@ -59,6 +59,11 @@ public class WaitingRoom {
     public synchronized void pickPatient() {
         numberOfChairsAvaiable++;
         sillaOperaciones = chairs.getFirst();
+
+        synchronized (sillaOperaciones) {
+            sillaOperaciones.setTocaTurno(true);
+            sillaOperaciones.notifyAll();
+        }
         chairs.removeFirst();
     }
 
@@ -72,26 +77,32 @@ public class WaitingRoom {
         Dentist.estaOperando = false;
     }
 
-    public synchronized void setDentista(Dentist dentista) {
+    public void setDentista(Dentist dentista) {
         this.dentista = dentista;
     }
 
-    public synchronized static LinkedList<Patient> getPatientsWaiting() {
-        return chairs;
+    public static LinkedList<Patient> getPatientsWaiting() {
+        synchronized (chairs) {
+            return chairs;
+        }
     }
 
-    public synchronized static LinkedList<Patient> getPacientesOperados() {
-        return pacientesOperados;
+    public static LinkedList<Patient> getPacientesOperados() {
+        synchronized (pacientesOperados) {
+            return pacientesOperados;
+        }
     }
 
-    public static int getOpertationId() {
+    public synchronized static int getOpertationId() {
         synchronized (sillaOperaciones) {
             return sillaOperaciones.getId();
         }
     }
 
-    public synchronized static LinkedList<Patient> getRejected() {
-        return rejected;
+    public static LinkedList<Patient> getRejected() {
+        synchronized (rejected) {
+            return rejected;
+        }
     }
 }
 

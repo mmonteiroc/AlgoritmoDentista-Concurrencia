@@ -11,15 +11,17 @@ import java.util.concurrent.Executors;
  */
 public class DentistOffice {
     static Random random = null;
-
+    static int tiempoEntrePacientes = 1300;
+    static int tiempoOperaciones = 8000;
+    static int NUMBER_CHAIRS = 7;
+    static WaitingRoom waitingRoom;
     static void start() {
         Thread hilo = new Thread(new Runnable() {
             @Override
             public void run() {
                 random = new Random();
                 // CREAMOS LA WAITING ROOM
-                final Integer NUMBER_CHAIRS = 7;
-                WaitingRoom waitingRoom = new WaitingRoom(NUMBER_CHAIRS);
+                waitingRoom = new WaitingRoom(NUMBER_CHAIRS);
                 Dentist dent = new Dentist(waitingRoom);
                 waitingRoom.setDentista(dent);
 
@@ -30,10 +32,10 @@ public class DentistOffice {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                while (Patient.numeroPacientes <= 100) {
+                while (Patient.numeroPacientes <= 10000) {
                     es.execute(new Patient(waitingRoom));
                     try {
-                        Thread.sleep(random.nextInt(1300) + 500);
+                        Thread.sleep(random.nextInt(tiempoEntrePacientes) + 300);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
