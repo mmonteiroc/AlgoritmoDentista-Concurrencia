@@ -66,7 +66,9 @@ public class Dentist implements Runnable {
 
 
                     // Sacamos al paciente y vaciamos la silla
-                    waitingRoom.dispatchClient();
+                    synchronized (this) {
+                        waitingRoom.dispatchClient();
+                    }
                 } else if (!waitingRoom.roomIsEmpty()) {
                     // Elegimos que paciente operamos ahora
                     System.out.println("Siguiente paciente !!!!!!!!");
@@ -78,8 +80,9 @@ public class Dentist implements Runnable {
                     Thread.sleep(DentistOffice.random.nextInt(DentistOffice.tiempoOperaciones) + 1000);
 
                     printText("Paciente: " + WaitingRoom.sillaOperaciones.getId() + " ya ha sido operado y se va a su casa");
-
-                    waitingRoom.dispatchClient();
+                    synchronized (this) {
+                        waitingRoom.dispatchClient();
+                    }
                 }
 
             }

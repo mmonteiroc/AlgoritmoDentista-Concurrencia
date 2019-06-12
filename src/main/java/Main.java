@@ -196,11 +196,17 @@ class MyGame extends BasicGame {
         box.setCenterX(x);
         box.setCenterY(y);
         graphics.draw(box);
-        if (!Dentist.estaOperando) {
-            graphics.drawString("Dentista no esta operando", x - 130, y + 10);
-        } else {
-            graphics.drawString("Dentista operando a: " + WaitingRoom.getOpertationId(), x - 120, y + 10);
+
+        synchronized (WaitingRoom.dentista) {
+            if (!Dentist.estaOperando) {
+                graphics.drawString("Dentista no esta operando", x - 130, y + 10);
+            } else {
+                if (WaitingRoom.sillaOperaciones != null) {
+                    graphics.drawString("Dentista operando a: " + WaitingRoom.getOpertationId(), x - 120, y + 10);
+                }
+            }
         }
+
     }
 
 

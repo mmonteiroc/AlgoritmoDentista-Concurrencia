@@ -17,7 +17,7 @@ public class WaitingRoom {
 
     // Atributos package
     static Patient sillaOperaciones = null;
-    Dentist dentista;
+    static Dentist dentista;
 
     /**
      * Constructor que nos permite instanciar nuestra waiting room
@@ -98,13 +98,15 @@ public class WaitingRoom {
      * el cliente y vaciar nuestra silla de operaciones
      */
     public synchronized void dispatchClient() {
-        sillaOperaciones.operado = true;
-        synchronized (sillaOperaciones) {
-            sillaOperaciones.notifyAll();
-            pacientesOperados.addLast(sillaOperaciones);
-            sillaOperaciones = null;
+        synchronized (dentista) {
+            sillaOperaciones.operado = true;
+            synchronized (sillaOperaciones) {
+                sillaOperaciones.notifyAll();
+                pacientesOperados.addLast(sillaOperaciones);
+                sillaOperaciones = null;
+            }
+            Dentist.estaOperando = false;
         }
-        Dentist.estaOperando = false;
     }
 
     /**
@@ -146,7 +148,10 @@ public class WaitingRoom {
      * @return Int ID
      */
     public synchronized static int getOpertationId() {
-        synchronized (sillaOperaciones) {
+        synchronized (dentista) {
+            if (sillaOperaciones == null) {
+                return 0;
+            }
             return sillaOperaciones.getId();
         }
     }
