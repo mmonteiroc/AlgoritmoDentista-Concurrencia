@@ -25,19 +25,46 @@ public class Main {
 
 }
 
+/**
+ * Clase que nos permetira representar
+ * la parte visual de nuestro codigo
+ */
 class MyGame extends BasicGame {
+
+
+    /**
+     * constructor de dicha clase
+     */
     public MyGame() {
         super("El dentista");
     }
 
+    /**
+     * Este metodo nos permite inicializar todo
+     * lo que necesitemos para nuestro programa
+     *
+     * @param gameContainer
+     * @throws SlickException Posible excepcion que se podria lanzar durante nuestro programa
+     */
     @Override
     public void init(GameContainer gameContainer) throws SlickException {
         DentistOffice.start();
     }
 
+    /**
+     * Este metodo se llama 60 veces por segundo
+     * y nos permite ir actualizando nuestro
+     * juego a tiempo real
+     *
+     * @param gameContainer
+     * @param i
+     * @throws SlickException Posible excepcion que se podria lanzar durante nuestro programa
+     */
     @Override
     public void update(GameContainer gameContainer, int i) throws SlickException {
         Input tecla = gameContainer.getInput();
+
+        // CONTROL DE TECLAS PARA MODIFICAR EL JUEGO
         if (tecla.isKeyDown(Input.KEY_A)) {
             // subimos el tiempo de pacientes
             DentistOffice.tiempoEntrePacientes += 100;
@@ -49,7 +76,6 @@ class MyGame extends BasicGame {
             }
         }
 
-
         if (tecla.isKeyDown(Input.KEY_S)) {
             // subimos el tiempo de operaciones
             DentistOffice.tiempoOperaciones += 100;
@@ -60,24 +86,26 @@ class MyGame extends BasicGame {
                 DentistOffice.tiempoOperaciones -= 100;
             }
         }
-        if (tecla.isKeyDown(Input.KEY_UP)) {
-            DentistOffice.NUMBER_CHAIRS++;
-        }
-        if (tecla.isKeyDown(Input.KEY_DOWN)) {
-            DentistOffice.NUMBER_CHAIRS--;
-        }
 
+
+        // Aqui añadimos de golpe 80 pacientes mas
         if (tecla.isKeyPressed(Input.KEY_ESCAPE)) {
-
             ExecutorService es = Executors.newCachedThreadPool();
             for (int j = 0; j < 80; j++) {
                 es.execute(new Patient(DentistOffice.waitingRoom));
             }
-
         }
 
     }
 
+    /**
+     * Este metodo nos permite renderizar
+     * visualmente a tiempo real nuestro codigo
+     *
+     * @param gameContainer
+     * @param graphics
+     * @throws SlickException Posible excepcion que se podria lanzar durante nuestro programa
+     */
     @Override
     public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
 
@@ -105,17 +133,30 @@ class MyGame extends BasicGame {
         graphics.drawString("(s/x to modify) Tiempo maximo entre operacion: " + ((double) DentistOffice.tiempoOperaciones / 1000) + "s", 830, 25);
     }
 
+    /**
+     * Este metodo lo que hacemos es recoger la lista
+     * de pacientes que estan esperando, definimos
+     * donde queremos empezar a dibujar y llamamos
+     * a draw pasando los parametros que queramos
+     *
+     * @param graphics Donde dibujaremos
+     */
     private void drawPatientsWaiting(Graphics graphics) {
         LinkedList<Patient> pacientesEsperando = WaitingRoom.getPatientsWaiting();
-        Rectangle box = null;
         int BOX_SIZE = 35;
         int x = 20;
         int y = 70;
         draw(pacientesEsperando, x, y, graphics, BOX_SIZE);
-
-
     }
 
+    /**
+     * Este metodo lo que hacemos es recoger la lista
+     * de pacientes que estan operados, definimos
+     * donde queremos empezar a dibujar y llamamos
+     * a draw pasando los parametros que queramos
+     *
+     * @param graphics Donde dibujaremos
+     */
     private void drawPatientsOperated(Graphics graphics) {
         LinkedList<Patient> pacientesOperado = WaitingRoom.getPacientesOperados();
         int BOX_SIZE = 35;
@@ -124,6 +165,15 @@ class MyGame extends BasicGame {
         draw(pacientesOperado, x, y, graphics, BOX_SIZE);
     }
 
+
+    /**
+     * Este metodo lo que hacemos es recoger la lista
+     * de pacientes que han estado rechazados, definimos
+     * donde queremos empezar a dibujar y llamamos
+     * a draw pasando los parametros que queramos
+     *
+     * @param graphics Donde dibujaremos
+     */
     private void drawRejected(Graphics graphics) {
         LinkedList<Patient> rejected = WaitingRoom.getRejected();
         int BOX_SIZE = 35;
@@ -132,6 +182,11 @@ class MyGame extends BasicGame {
         draw(rejected, x, y, graphics, BOX_SIZE);
     }
 
+    /**
+     * Este metodo nos permite dibujar nuestro doctor
+     *
+     * @param graphics Donde dibujaremos
+     */
     private void drawDoctor(Graphics graphics) {
         int BOX_SIZE = 100;
         int x = 800;
@@ -146,12 +201,18 @@ class MyGame extends BasicGame {
         } else {
             graphics.drawString("Dentista operando a: " + WaitingRoom.getOpertationId(), x - 120, y + 10);
         }
-
     }
 
 
-
-
+    /**
+     * Este metodo recibe una lista y la representa en nuestra pantalla
+     *
+     * @param pacientes Lista de pacientes a pintar
+     * @param x         donde queremos pintar en X
+     * @param y         donde queremos pintar en Y
+     * @param graphics  donde queremos pintar
+     * @param BOX_SIZE  Tamaño de la caja que quiere vender
+     */
     private void draw(LinkedList<Patient> pacientes, int x, int y, Graphics graphics, int BOX_SIZE) {
         Rectangle box = null;
         int yOriginal = y;
@@ -180,6 +241,4 @@ class MyGame extends BasicGame {
             }
         }
     }
-
-
 }
